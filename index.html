@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fors Almaz Store</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Шапка профиля -->
+        <div class="profile-card">
+            <div class="avatar-glow">
+                <div class="user-avatar" id="user-initial">Y</div>
+            </div>
+            <div class="user-info">
+                <h3 id="username">yahyo</h3>
+                <span class="user-id">ID: 8459747832</span>
+            </div>
+        </div>
+
+        <!-- Карточка баланса с 3D-эффектом -->
+        <div class="balance-card">
+            <div class="balance-glow"></div>
+            <span class="balance-title">Баланс кошелька</span>
+            <div class="balance-amount">0.0 <span class="currency">сомонӣ</span></div>
+            <div class="balance-buttons">
+                <button class="btn-primary" onclick="triggerAction('Пополнение')">
+                    <span>Пур кардан</span>
+                </button>
+                <button class="btn-secondary" onclick="triggerAction('Поддержка')">
+                    <span>Дастгирӣ</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Список игр -->
+        <div class="section-header">
+            <h3>Игры и Сервисы</h3>
+            <span class="badge-live">24/7 Live</span>
+        </div>
+
+        <div class="games-grid">
+            <div class="game-card" onclick="openGame('Free Fire')">
+                <div class="game-glow"></div>
+                <div class="game-tag">GLOBAL</div>
+                <div class="game-icon">🔥</div>
+                <span class="game-name">FREE FIRE</span>
+                <span class="game-desc">Алмазы и Пропуска</span>
+            </div>
+            <div class="game-card" onclick="openGame('PUBG Mobile')">
+                <div class="game-glow"></div>
+                <div class="game-tag">GLOBAL</div>
+                <div class="game-icon">🪖</div>
+                <span class="game-name">PUBG MOBILE</span>
+                <span class="game-desc">UC и RP</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
