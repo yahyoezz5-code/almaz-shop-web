@@ -5,56 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fors Almaz Store</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="app-container">
-        <!-- Шапка профиля -->
-        <div class="profile-card">
-            <div class="avatar-glow">
-                <div class="user-avatar" id="user-initial">Y</div>
-            </div>
+        <!-- Профиль пользователя -->
+        <div class="user-card">
+            <div class="avatar">Y</div>
             <div class="user-info">
-                <h3 id="username">yahyo</h3>
-                <span class="user-id">ID: 8459747832</span>
+                <h2>yahyo</h2>
+                <p>ID: 8459747832</p>
             </div>
         </div>
 
-        <!-- Карточка баланса с 3D-эффектом -->
-        <div class="balance-card">
-            <div class="balance-glow"></div>
-            <span class="balance-title">Баланс кошелька</span>
-            <div class="balance-amount">0.0 <span class="currency">сомонӣ</span></div>
-            <div class="balance-buttons">
-                <button class="btn-primary" onclick="triggerAction('Пополнение')">
-                    <span>Пур кардан</span>
-                </button>
-                <button class="btn-secondary" onclick="triggerAction('Поддержка')">
-                    <span>Дастгирӣ</span>
-                </button>
+        <!-- Баланс кошелька -->
+        <div class="wallet-card">
+            <span class="wallet-title">БАЛАНС КОШЕЛЬКА</span>
+            <div class="wallet-balance">0.0 <span class="currency">сомони</span></div>
+            <div class="wallet-buttons">
+                <button class="btn-primary">Пур кардан</button>
+                <button class="btn-secondary">Дастгири</button>
             </div>
         </div>
 
-        <!-- Список игр -->
+        <!-- Секция игр -->
         <div class="section-header">
             <h3>Игры и Сервисы</h3>
             <span class="badge-live">24/7 Live</span>
         </div>
 
         <div class="games-grid">
-            <div class="game-card" onclick="openGame('Free Fire')">
-                <div class="game-glow"></div>
-                <div class="game-tag">GLOBAL</div>
-                <div class="game-icon">🔥</div>
-                <span class="game-name">FREE FIRE</span>
-                <span class="game-desc">Алмазы и Пропуска</span>
-            </div>
-            <div class="game-card" onclick="openGame('PUBG Mobile')">
-                <div class="game-glow"></div>
-                <div class="game-tag">GLOBAL</div>
-                <div class="game-icon">🪖</div>
-                <span class="game-name">PUBG MOBILE</span>
-                <span class="game-desc">UC и RP</span>
+            <!-- Карточка Free Fire (только она) -->
+            <div class="game-card">
+                <div class="game-badge">GLOBAL</div>
+                <div class="game-icon-container">
+                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&auto=format&fit=crop&q=80" alt="Free Fire" class="game-img">
+                </div>
+                <div class="game-details">
+                    <h4>FREE FIRE</h4>
+                    <p>Алмазы и Пропуска</p>
+                </div>
             </div>
         </div>
     </div>

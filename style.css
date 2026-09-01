@@ -1,123 +1,113 @@
 * {
+    box-sizing: border-box;
     margin: 0;
     padding: 0;
-    box-sizing: border-box;
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
-    background-color: #08090d;
+    background-color: #0b0b10;
     color: #ffffff;
-    padding: 16px;
+    display: flex;
+    justify-content: center;
     min-height: 100vh;
+    padding: 16px;
 }
 
 .app-container {
+    width: 100%;
     max-width: 480px;
-    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
 }
 
-/* Профиль */
-.profile-card {
+/* Карточка пользователя */
+.user-card {
+    background: linear-gradient(135deg, #171722 0%, #101018 100%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 16px;
+    padding: 16px;
     display: flex;
     align-items: center;
-    background: linear-gradient(145deg, #13151f, #1a1d2d);
-    padding: 14px 18px;
-    border-radius: 20px;
-    margin-bottom: 16px;
-    border: 1px solid rgba(255, 255, 255, 0.07);
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    gap: 14px;
 }
 
-.user-avatar {
-    width: 50px;
-    height: 50px;
-    background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
-    color: #08090d;
-    font-weight: 800;
-    font-size: 22px;
+.avatar {
+    width: 48px;
+    height: 48px;
+    background: linear-gradient(135deg, #007aff, #5856d6);
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
-    margin-right: 14px;
-    box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);
+    font-size: 20px;
+    font-weight: bold;
+    color: #fff;
 }
 
-.user-info h3 {
-    font-size: 17px;
-    font-weight: 700;
-    letter-spacing: 0.3px;
-}
-
-.user-id {
-    font-size: 12px;
-    color: #94a3b8;
-}
-
-/* Баланс с 3D эффектом */
-.balance-card {
-    position: relative;
-    background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
-    padding: 22px;
-    border-radius: 24px;
-    margin-bottom: 24px;
-    box-shadow: 0 15px 35px rgba(124, 58, 237, 0.4), inset 0 2px 6px rgba(255, 255, 255, 0.3);
-    overflow: hidden;
-    transform: perspective(1000px) rotateX(2deg);
-    transition: transform 0.3s ease;
-}
-
-.balance-card:active {
-    transform: perspective(1000px) rotateX(0deg) scale(0.98);
-}
-
-.balance-title {
-    font-size: 13px;
-    color: rgba(255, 255, 255, 0.75);
-    font-weight: 500;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-}
-
-.balance-amount {
-    font-size: 34px;
-    font-weight: 900;
-    margin: 6px 0 18px 0;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-}
-
-.currency {
-    font-size: 15px;
+.user-info h2 {
+    font-size: 18px;
     font-weight: 600;
-    opacity: 0.9;
 }
 
-.balance-buttons {
+.user-info p {
+    font-size: 13px;
+    color: #8e8e93;
+    margin-top: 2px;
+}
+
+/* Кошелек */
+.wallet-card {
+    background: linear-gradient(135deg, #5856d6 0%, #7c5cfc 100%);
+    border-radius: 20px;
+    padding: 20px;
+    box-shadow: 0 10px 25px rgba(88, 86, 214, 0.3);
     display: flex;
+    flex-direction: column;
     gap: 12px;
 }
 
-.balance-buttons button {
-    flex: 1;
-    padding: 12px;
-    border: none;
-    border-radius: 14px;
+.wallet-title {
+    font-size: 11px;
     font-weight: 700;
+    letter-spacing: 0.5px;
+    opacity: 0.8;
+}
+
+.wallet-balance {
+    font-size: 32px;
+    font-weight: 700;
+}
+
+.currency {
+    font-size: 18px;
+    font-weight: 400;
+    opacity: 0.9;
+}
+
+.wallet-buttons {
+    display: flex;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.btn-primary, .btn-secondary {
+    flex: 1;
+    padding: 10px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
     cursor: pointer;
-    font-size: 13px;
-    transition: all 0.2s ease;
+    text-align: center;
+    transition: opacity 0.2s;
 }
 
 .btn-primary {
-    background: rgba(255, 255, 255, 0.25);
+    background: rgba(255, 255, 255, 0.2);
     color: #fff;
     backdrop-filter: blur(5px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-}
-
-.btn-primary:active {
-    background: rgba(255, 255, 255, 0.35);
 }
 
 .btn-secondary {
@@ -125,86 +115,93 @@ body {
     color: #fff;
 }
 
-/* Заголовок сетки */
+.btn-primary:active, .btn-secondary:active {
+    opacity: 0.7;
+}
+
+/* Заголовок секции */
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 14px;
+    margin-top: 8px;
 }
 
 .section-header h3 {
     font-size: 16px;
-    font-weight: 700;
-    color: #f1f5f9;
+    font-weight: 600;
 }
 
 .badge-live {
-    background: rgba(16, 185, 129, 0.15);
-    color: #34d399;
+    background-color: rgba(52, 199, 89, 0.15);
+    color: #34c759;
     font-size: 10px;
-    font-weight: 800;
+    font-weight: 700;
     padding: 4px 8px;
     border-radius: 8px;
-    border: 1px solid rgba(52, 211, 153, 0.3);
 }
 
-/* 3D Карточки игр */
+/* Сетка игр */
 .games-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
+    grid-template-columns: 1fr;
+    gap: 12px;
 }
 
 .game-card {
+    background: #15151c;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 16px;
+    padding: 16px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
     position: relative;
-    background: linear-gradient(145deg, #13151f, #1a1d2d);
-    border-radius: 20px;
-    padding: 18px;
     cursor: pointer;
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4), inset 0 1px 1px rgba(255, 255, 255, 0.1);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    overflow: hidden;
-}
-
-.game-card:hover {
-    border-color: rgba(99, 102, 241, 0.4);
-    transform: translateY(-3px);
+    transition: transform 0.2s, background 0.2s;
 }
 
 .game-card:active {
-    transform: scale(0.96);
+    transform: scale(0.98);
+    background: #1c1c25;
 }
 
-.game-tag {
+.game-badge {
     position: absolute;
     top: 12px;
     right: 12px;
-    background: #2563eb;
-    font-size: 8px;
+    background: rgba(0, 122, 255, 0.15);
+    color: #0a84ff;
+    font-size: 9px;
+    font-weight: 700;
     padding: 3px 6px;
     border-radius: 6px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
 }
 
-.game-icon {
-    font-size: 36px;
-    margin-bottom: 10px;
-    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+.game-icon-container {
+    width: 48px;
+    height: 48px;
+    border-radius: 12px;
+    overflow: hidden;
+    background: #252530;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.game-name {
-    display: block;
-    font-size: 13px;
-    font-weight: 800;
-    letter-spacing: 0.5px;
-    margin-bottom: 4px;
-    color: #f8fafc;
+.game-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
-.game-desc {
-    font-size: 11px;
-    color: #64748b;
+.game-details h4 {
+    font-size: 15px;
+    font-weight: 600;
+}
+
+.game-details p {
+    font-size: 12px;
+    color: #8e8e93;
+    margin-top: 2px;
 }
