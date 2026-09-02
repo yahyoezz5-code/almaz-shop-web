@@ -1,258 +1,387 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tg">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Fors Almaz Store</title>
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         :root {
-            --bg-color: #0f172a;
-            --card-bg: #1e293b;
-            --accent-color: #3b82f6;
-            --text-color: #f8fafc;
-            --gold-color: #f59e0b;
+            --bg-main: #0f172a;
+            --bg-card: #1e293b;
+            --text-main: #ffffff;
+            --text-muted: #94a3b8;
+            --accent: #6366f1;
+            --accent-hover: #4f46e5;
+            --nav-bg: #1e293b;
+            --border-color: #334155;
         }
+
+        body.light-mode {
+            --bg-main: #f8fafc;
+            --bg-card: #ffffff;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --nav-bg: #ffffff;
+            --border-color: #e2e8f0;
+        }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: var(--bg-main);
+            color: var(--text-main);
             margin: 0;
-            padding: 15px;
-            box-sizing: border-box;
+            padding: 0;
+            padding-bottom: 70px;
+            transition: background-color 0.3s, color 0.3s;
         }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            background: var(--card-bg);
-            padding: 12px 16px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+
+        /* Pages */
+        .page { display: none; padding: 15px; }
+        .page.active { display: block; animation: fadeIn 0.3s; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* Bottom Nav */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0;
+            background-color: var(--nav-bg);
+            display: flex; justify-content: space-around;
+            padding: 10px 0; border-top: 1px solid var(--border-color);
+            z-index: 1000; transition: background-color 0.3s;
         }
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
+        .nav-item {
+            text-align: center; color: var(--text-muted);
+            font-size: 12px; cursor: pointer; transition: color 0.2s;
         }
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background: var(--accent-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
+        .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
+        .nav-item.active { color: var(--accent); }
+
+        /* Profile Elements */
+        .profile-card {
+            background: var(--bg-card); border-radius: 16px;
+            padding: 20px; margin-bottom: 15px; text-align: center;
+            border: 1px solid var(--border-color);
         }
-        .brand-title {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            color: var(--gold-color);
-            margin-bottom: 15px;
+        .avatar-lg {
+            width: 60px; height: 60px; border-radius: 50%;
+            background: var(--accent); color: #fff;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 24px; font-weight: bold; margin: 0 auto 10px auto;
         }
-        .brand-title img {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
+        .balance-box {
+            display: flex; justify-content: space-between;
+            background: var(--bg-main); border-radius: 12px;
+            padding: 15px; margin-top: 15px;
         }
-        .player-id-section {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
+        .btn-main {
+            background: var(--accent); color: #fff; border: none;
+            width: 100%; padding: 12px; border-radius: 12px;
+            font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer;
         }
-        .player-id-section label {
-            display: block;
-            font-size: 14px;
-            margin-bottom: 8px;
-            color: #94a3b8;
+        .settings-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--bg-card); padding: 15px;
+            border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border-color);
         }
-        .player-id-section input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #0f172a;
-            color: #fff;
-            box-sizing: border-box;
-            font-size: 16px;
+
+        /* Free Fire Page */
+        .ff-header {
+            display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
         }
-        .section-title {
-            font-size: 16px;
-            font-weight: bold;
-            margin-bottom: 12px;
+        .ff-header img { width: 40px; border-radius: 8px; }
+        .input-group {
+            background: var(--bg-card); padding: 15px; border-radius: 12px; margin-bottom: 15px;
+            border: 1px solid var(--border-color);
         }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 12px;
-            margin-bottom: 25px;
+        .input-group input {
+            width: 100%; background: var(--bg-main); border: 1px solid var(--border-color);
+            color: var(--text-main); padding: 12px; border-radius: 8px; box-sizing: border-box;
+            margin-bottom: 10px; font-size: 16px;
         }
-        .card {
-            background: var(--card-bg);
-            border-radius: 12px;
-            padding: 15px;
-            text-align: center;
-            border: 1px solid #334155;
-            cursor: pointer;
-            transition: transform 0.2s, border-color 0.2s;
+        .check-btn {
+            background: #22c55e; color: white; border: none; padding: 10px 15px;
+            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;
         }
-        .card:hover {
-            transform: translateY(-2px);
-            border-color: var(--accent-color);
+        .region-box {
+            background: var(--accent); color: white; padding: 8px 15px;
+            border-radius: 8px; display: inline-block; font-size: 14px; font-weight: bold;
         }
-        .card img {
-            width: 50px;
-            height: 50px;
-            object-fit: contain;
-            margin-bottom: 8px;
+        
+        /* Tabs */
+        .category-tabs {
+            display: flex; gap: 10px; margin: 20px 0 15px 0;
         }
-        .card .title {
-            font-size: 14px;
-            font-weight: bold;
+        .cat-tab {
+            flex: 1; text-align: center; padding: 10px;
+            background: var(--bg-card); border-radius: 8px;
+            color: var(--text-muted); cursor: pointer; font-weight: bold;
+            border: 1px solid var(--border-color);
         }
-        .card .price {
-            color: var(--gold-color);
-            font-weight: bold;
-            margin-top: 5px;
+        .cat-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
+
+        /* Grid */
+        .items-grid {
+            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
         }
-        .history-section {
-            background: var(--card-bg);
-            padding: 15px;
-            border-radius: 12px;
+        .item-card {
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            border-radius: 12px; padding: 15px 10px; text-align: center;
+            cursor: pointer; position: relative;
         }
-        .history-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid #334155;
-            font-size: 14px;
-        }
-        .history-item:last-child {
-            border-bottom: none;
-        }
+        .item-card img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; }
+        .item-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
+        .item-price { color: var(--text-muted); font-size: 12px; }
+
+        /* Toggle Switch */
+        .switch { position: relative; display: inline-block; width: 40px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--accent); }
+        input:checked + .slider:before { transform: translateX(16px); }
     </style>
 </head>
 <body>
 
-    <div class="header">
-        <div class="user-info">
-            <div class="avatar" id="user-avatar">U</div>
-            <div>
-                <div id="user-name" style="font-weight: bold;">Пользователь</div>
-                <div id="user-id" style="font-size: 12px; color: #94a3b8;">ID: -------</div>
+    <div id="page-shop" class="page active">
+        <div class="ff-header">
+            <img src="https://play-lh.googleusercontent.com/NEjsXHAU59mP_0bO_28o-i9GkCj_O3u8lZ1nFTVd5_Lq4sH-v10Z-qQ0K_7fL9W2Y6k" alt="FF Logo">
+            <h2>Free Fire (СНГ)</h2>
+        </div>
+
+        <div class="input-group">
+            <label style="display:block; margin-bottom:8px; font-size:14px; color:var(--text-muted);">ID-И БОЗИНГАР</label>
+            <input type="number" id="player-id" placeholder="ID-ро ворид кунед">
+            <button class="check-btn" onclick="checkUID()">Санҷидан (Проверить)</button>
+            <div id="uid-result" style="margin-top: 10px; font-size: 14px; font-weight: bold; display: none; color: #22c55e;">
+                Ном: <span id="player-name">...</span>
+            </div>
+        </div>
+
+        <div style="margin-bottom: 15px;">
+            <span style="font-size:14px; color:var(--text-muted);">Минтақа:</span>
+            <div class="region-box">СНГ</div>
+        </div>
+
+        <div class="category-tabs">
+            <div class="cat-tab active" onclick="switchCategory('diamonds')">Алмазы</div>
+            <div class="cat-tab" onclick="switchCategory('passes')">Пропуск</div>
+        </div>
+
+        <div class="items-grid" id="grid-diamonds">
+            <div class="item-card" onclick="buyItem('110 Diamonds', '15 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
+                <div class="item-title">110 Diamonds</div>
+                <div class="item-price">15.0 сомонӣ</div>
+            </div>
+            <div class="item-card" onclick="buyItem('341 Diamonds', '42 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
+                <div class="item-title">341 Diamonds</div>
+                <div class="item-price">42.0 сомонӣ</div>
+            </div>
+            <div class="item-card" onclick="buyItem('572 Diamonds', '70 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
+                <div class="item-title">572 Diamonds</div>
+                <div class="item-price">70.0 сомонӣ</div>
+            </div>
+        </div>
+
+        <div class="items-grid" id="grid-passes" style="display: none;">
+            <div class="item-card" onclick="buyItem('Weekly Pass', '22 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2953/2953361.png" alt="💳">
+                <div class="item-title">Еженедельная Подписка</div>
+                <div class="item-price">22.0 сомонӣ</div>
+            </div>
+            <div class="item-card" onclick="buyItem('Monthly Pass', '95 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/2953/2953372.png" alt="💳">
+                <div class="item-title">Месячная Подписка</div>
+                <div class="item-price">95.0 сомонӣ</div>
+            </div>
+            <div class="item-card" onclick="buyItem('Level Up Pass', '15 TJS')">
+                <img src="https://cdn-icons-png.flaticon.com/512/4112/4112351.png" alt="⭐">
+                <div class="item-title">Повышение Уровня</div>
+                <div class="item-price">15.0 сомонӣ</div>
             </div>
         </div>
     </div>
 
-    <div class="brand-title">
-        <img src="https://cdn-icons-png.flaticon.com/512/825/825590.png" alt="Free Fire Logo">
-        <span>Free Fire Official Store</span>
-    </div>
-
-    <div class="player-id-section">
-        <label for="player-id">Введите Player ID (UID):</label>
-        <input type="number" id="player-id" placeholder="Например: 123456789">
-    </div>
-
-    <div class="section-title">💎 Алмазы</div>
-    <div class="grid">
-        <div class="card" onclick="buyItem('100 Алмазов', '15 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
-            <div class="title">100 Алмазов</div>
-            <div class="price">15 TJS</div>
-        </div>
-        <div class="card" onclick="buyItem('310 Алмазов', '42 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
-            <div class="title">310 Алмазов</div>
-            <div class="price">42 TJS</div>
-        </div>
-        <div class="card" onclick="buyItem('520 Алмазов', '70 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
-            <div class="title">520 Алмазов</div>
-            <div class="price">70 TJS</div>
-        </div>
-        <div class="card" onclick="buyItem('1060 Алмазов', '135 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
-            <div class="title">1060 Алмазов</div>
-            <div class="price">135 TJS</div>
+    <div id="page-history" class="page">
+        <h2>Таърих (История)</h2>
+        <div id="history-list" class="input-group">
+            <div style="color: var(--text-muted); text-align: center;">Боригири... (Пусто)</div>
         </div>
     </div>
 
-    <div class="section-title">📜 Ваучеры и Пропуска</div>
-    <div class="grid">
-        <div class="card" onclick="buyItem('Недельный Ваучер', '22 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2953/2953361.png" alt="Weekly Pass">
-            <div class="title">Weekly Membership</div>
-            <div class="price">22 TJS</div>
+    <div id="page-profile" class="page">
+        <div class="profile-card">
+            <div class="avatar-lg" id="profile-avatar">U</div>
+            <h2 id="profile-name" style="margin: 0; font-size: 20px;">Пользователь</h2>
+            <div id="profile-id" style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">ID: ---</div>
+            
+            <div class="balance-box">
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">БАЛАНС</div>
+                    <div style="font-weight: bold; font-size: 18px;">0.0 <span style="font-size: 12px;">сомонӣ</span></div>
+                </div>
+                <div>
+                    <div style="font-size: 12px; color: var(--text-muted);">ҶАМЪИ ХАРОҶОТ</div>
+                    <div style="font-weight: bold; font-size: 18px;">0 <span style="font-size: 12px;">сомонӣ</span></div>
+                </div>
+            </div>
+            <button class="btn-main" onclick="openTopUp()">Пур кардани баланс</button>
         </div>
-        <div class="card" onclick="buyItem('Месячный Ваучер', '95 TJS')">
-            <img src="https://cdn-icons-png.flaticon.com/512/2953/2953372.png" alt="Monthly Pass">
-            <div class="title">Monthly Membership</div>
-            <div class="price">95 TJS</div>
+
+        <div class="settings-row">
+            <span>🌙 Речаи шабона (Тёмная тема)</span>
+            <label class="switch">
+                <input type="checkbox" id="theme-toggle" checked onchange="toggleTheme()">
+                <span class="slider"></span>
+            </label>
+        </div>
+        <div class="settings-row" onclick="tg.close()">
+            <span>💬 Дастгирӣ (Поддержка)</span>
+            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
         </div>
     </div>
 
-    <div class="section-title">📜 История заказов</div>
-    <div class="history-section" id="history-list">
-        <div style="color: #94a3b8; font-size: 13px;">История пуста</div>
+    <div id="page-topup" class="page">
+        <h2>Пур кардани баланс</h2>
+        <div class="input-group">
+            <label style="color: var(--text-muted); font-size: 14px;">Маблағро ворид кунед (сомонӣ):</label>
+            <input type="number" id="topup-amount" placeholder="Масалан: 20">
+            <p style="font-size: 12px; color: var(--text-muted);">Барои пур кардани баланс маблағро интихоб кунед ва чекро ба бот равон кунед.</p>
+            <button class="btn-main" onclick="requestTopUp()">Идома додан (Равон кардани чек) ➔</button>
+        </div>
+        <button class="btn-main" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main);" onclick="switchPage('profile')">Кафо (Назад)</button>
     </div>
+
+    <nav class="bottom-nav">
+        <div class="nav-item active" id="nav-shop" onclick="switchPage('shop')">
+            <i class="fa-solid fa-gamepad"></i> Мағоза
+        </div>
+        <div class="nav-item" id="nav-history" onclick="switchPage('history')">
+            <i class="fa-solid fa-clock-rotate-left"></i> Таърих
+        </div>
+        <div class="nav-item" id="nav-profile" onclick="switchPage('profile')">
+            <i class="fa-solid fa-user"></i> Профил
+        </div>
+    </nav>
 
     <script>
         const tg = window.Telegram.WebApp;
         tg.expand();
+        tg.ready();
 
+        // Подгрузка данных пользователя Telegram
         if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
             const user = tg.initDataUnsafe.user;
-            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
-            document.getElementById('user-id').innerText = "ID: " + user.id;
-            document.getElementById('user-avatar').innerText = user.first_name.charAt(0).toUpperCase();
+            const name = user.first_name + (user.last_name ? " " + user.last_name : "");
+            document.getElementById('profile-name').innerText = name;
+            document.getElementById('profile-id').innerText = "ID: " + user.id;
+            document.getElementById('profile-avatar').innerText = name.charAt(0).toUpperCase();
         }
 
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('order_history') || '[]');
-            const container = document.getElementById('history-list');
-            if (history.length === 0) {
-                container.innerHTML = '<div style="color: #94a3b8; font-size: 13px;">История пуста</div>';
-                return;
+        // Переключение страниц меню
+        function switchPage(pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            
+            document.getElementById('page-' + pageId).classList.add('active');
+            if(document.getElementById('nav-' + pageId)) {
+                document.getElementById('nav-' + pageId).classList.add('active');
             }
-            container.innerHTML = history.map(item => `
-                <div class="history-item">
-                    <span>${item.title} (ID: ${item.playerId})</span>
-                    <span style="color: var(--gold-color);">${item.price}</span>
-                </div>
-            `).join('');
+            if(pageId === 'history') loadHistory();
         }
 
+        // Переключение вкладок Алмазы/Пропуска
+        function switchCategory(cat) {
+            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
+            document.getElementById('grid-diamonds').style.display = 'none';
+            document.getElementById('grid-passes').style.display = 'none';
+
+            if(cat === 'diamonds') {
+                document.querySelectorAll('.cat-tab')[0].classList.add('active');
+                document.getElementById('grid-diamonds').style.display = 'grid';
+            } else {
+                document.querySelectorAll('.cat-tab')[1].classList.add('active');
+                document.getElementById('grid-passes').style.display = 'grid';
+            }
+        }
+
+        // Логика светлой/темной темы
+        function toggleTheme() {
+            const isDark = document.getElementById('theme-toggle').checked;
+            if (isDark) {
+                document.body.classList.remove('light-mode');
+            } else {
+                document.body.classList.add('light-mode');
+            }
+        }
+
+        // Имитация проверки UID
+        function checkUID() {
+            const uid = document.getElementById('player-id').value;
+            if(!uid) return alert("UID-ро ворид кунед!");
+            
+            const resultBox = document.getElementById('uid-result');
+            const nameBox = document.getElementById('player-name');
+            resultBox.style.display = 'block';
+            nameBox.innerText = "Ҷустуҷӯ... (Поиск)";
+            nameBox.style.color = "var(--text-muted)";
+
+            // Эмуляция задержки сервера
+            setTimeout(() => {
+                nameBox.innerText = "PLAYER_" + uid.substring(0, 4); // Заглушка, так как API Garena закрыт
+                nameBox.style.color = "#22c55e";
+            }, 1000);
+        }
+
+        // Покупка
         function buyItem(title, price) {
-            const playerId = document.getElementById('player-id').value;
-            if (!playerId) {
-                alert("Пожалуйста, введите ваш Free Fire Player ID!");
+            const uid = document.getElementById('player-id').value;
+            if(!uid) {
+                alert("Аввал ID-и худро нависед! (Введите ID)");
                 return;
             }
-
-            const data = {
-                title: title,
-                price: price,
-                playerId: playerId
-            };
-
-            // Сохраняем в локальную историю
-            const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+            const data = { type: 'order', title: title, price: price, uid: uid };
+            
+            // Сохранение в историю
+            let history = JSON.parse(localStorage.getItem('almaz_history') || '[]');
             history.unshift(data);
-            localStorage.setItem('order_history', JSON.stringify(history));
-            loadHistory();
+            localStorage.setItem('almaz_history', JSON.stringify(history));
 
-            // Отправляем данные боту
+            // Отправка в бота
             tg.sendData(JSON.stringify(data));
         }
 
-        loadHistory();
+        // Пополнение баланса
+        function openTopUp() { switchPage('topup'); }
+        
+        function requestTopUp() {
+            const amount = document.getElementById('topup-amount').value;
+            if(!amount) return alert("Маблағро ворид кунед!");
+            
+            // Отправляем запрос на пополнение в бота (чтобы он попросил фото чека)
+            const data = { type: 'topup', amount: amount };
+            tg.sendData(JSON.stringify(data));
+        }
+
+        // Загрузка истории
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('almaz_history') || '[]');
+            const container = document.getElementById('history-list');
+            if (history.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Таърих холӣ аст</div>';
+                return;
+            }
+            container.innerHTML = history.map(item => `
+                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color); font-size:14px;">
+                    <div>${item.title} <br><span style="color:var(--text-muted); font-size:12px;">ID: ${item.uid}</span></div>
+                    <div style="font-weight:bold;">${item.price}</div>
+                </div>
+            `).join('');
+        }
     </script>
 </body>
 </html>
