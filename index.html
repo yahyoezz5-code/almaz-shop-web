@@ -1,19 +1,21 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html lang="tg">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fors Almaz Store</title>
     <link rel="stylesheet" href="style.css">
+    <!-- Подключаем Telegram Web App скрипт -->
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
 </head>
 <body>
     <div class="app-container">
         <!-- Профиль пользователя -->
         <div class="user-card">
-            <div class="avatar">Y</div>
+            <div class="avatar" id="user-avatar">Y</div>
             <div class="user-info">
-                <h2>yahyo</h2>
-                <p>ID: 8459747832</p>
+                <h2 id="user-name">yahyo</h2>
+                <p id="user-id">ID: 8459747832</p>
             </div>
         </div>
 
@@ -27,23 +29,51 @@
             </div>
         </div>
 
-        <!-- Секция игр -->
+        <!-- Секция товаров (Алмазы Free Fire) -->
         <div class="section-header">
-            <h3>Игры и Сервисы</h3>
+            <h3>Цены на Алмазы Free Fire</h3>
             <span class="badge-live">24/7 Live</span>
         </div>
 
-        <div class="games-grid">
-            <!-- Карточка Free Fire (только она) -->
-            <div class="game-card">
-                <div class="game-badge">GLOBAL</div>
-                <div class="game-icon-container">
-                    <img src="https://images.unsplash.com/photo-1542751371-adc38448a05e?w=100&auto=format&fit=crop&q=80" alt="Free Fire" class="game-img">
+        <div class="products-grid">
+            <!-- Товар 1 -->
+            <div class="product-card" onclick="buyItem('100 Алмазов', '10 сомони')">
+                <div class="product-icon">💎</div>
+                <div class="product-info">
+                    <h4>100 Алмазов</h4>
+                    <p class="product-price">10 сомони</p>
                 </div>
-                <div class="game-details">
-                    <h4>FREE FIRE</h4>
-                    <p>Алмазы и Пропуска</p>
+                <button class="btn-buy">Купить</button>
+            </div>
+
+            <!-- Товар 2 -->
+            <div class="product-card" onclick="buyItem('310 Алмазов', '30 сомони')">
+                <div class="product-icon">💎</div>
+                <div class="product-info">
+                    <h4>310 Алмазов</h4>
+                    <p class="product-price">30 сомони</p>
                 </div>
+                <button class="btn-buy">Купить</button>
+            </div>
+
+            <!-- Товар 3 -->
+            <div class="product-card" onclick="buyItem('520 Алмазов', '50 сомони')">
+                <div class="product-icon">💎</div>
+                <div class="product-info">
+                    <h4>520 Алмазов</h4>
+                    <p class="product-price">50 сомони</p>
+                </div>
+                <button class="btn-buy">Купить</button>
+            </div>
+
+            <!-- Товар 4 -->
+            <div class="product-card" onclick="buyItem('Level Up Pass', '25 сомони')">
+                <div class="product-icon">🎫</div>
+                <div class="product-info">
+                    <h4>Level Up Pass</h4>
+                    <p class="product-price">25 сомони</p>
+                </div>
+                <button class="btn-buy">Купить</button>
             </div>
         </div>
     </div>
