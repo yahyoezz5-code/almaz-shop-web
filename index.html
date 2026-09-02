@@ -1,83 +1,258 @@
 <!DOCTYPE html>
-<html lang="tg">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fors Almaz Store</title>
-    <link rel="stylesheet" href="style.css">
-    <!-- Подключаем Telegram Web App скрипт -->
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --card-bg: #1e293b;
+            --accent-color: #3b82f6;
+            --text-color: #f8fafc;
+            --gold-color: #f59e0b;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 15px;
+            box-sizing: border-box;
+        }
+        .header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--card-bg);
+            padding: 12px 16px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--accent-color);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        .brand-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--gold-color);
+            margin-bottom: 15px;
+        }
+        .brand-title img {
+            width: 28px;
+            height: 28px;
+            border-radius: 6px;
+        }
+        .player-id-section {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+            margin-bottom: 20px;
+        }
+        .player-id-section label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #94a3b8;
+        }
+        .player-id-section input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #334155;
+            background: #0f172a;
+            color: #fff;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        .section-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+        .card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            border: 1px solid #334155;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-color);
+        }
+        .card img {
+            width: 50px;
+            height: 50px;
+            object-fit: contain;
+            margin-bottom: 8px;
+        }
+        .card .title {
+            font-size: 14px;
+            font-weight: bold;
+        }
+        .card .price {
+            color: var(--gold-color);
+            font-weight: bold;
+            margin-top: 5px;
+        }
+        .history-section {
+            background: var(--card-bg);
+            padding: 15px;
+            border-radius: 12px;
+        }
+        .history-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid #334155;
+            font-size: 14px;
+        }
+        .history-item:last-child {
+            border-bottom: none;
+        }
+    </style>
 </head>
 <body>
-    <div class="app-container">
-        <!-- Профиль пользователя -->
-        <div class="user-card">
-            <div class="avatar" id="user-avatar">Y</div>
-            <div class="user-info">
-                <h2 id="user-name">yahyo</h2>
-                <p id="user-id">ID: 8459747832</p>
-            </div>
-        </div>
 
-        <!-- Баланс кошелька -->
-        <div class="wallet-card">
-            <span class="wallet-title">БАЛАНС КОШЕЛЬКА</span>
-            <div class="wallet-balance">0.0 <span class="currency">сомони</span></div>
-            <div class="wallet-buttons">
-                <button class="btn-primary">Пур кардан</button>
-                <button class="btn-secondary">Дастгири</button>
-            </div>
-        </div>
-
-        <!-- Секция товаров (Алмазы Free Fire) -->
-        <div class="section-header">
-            <h3>Цены на Алмазы Free Fire</h3>
-            <span class="badge-live">24/7 Live</span>
-        </div>
-
-        <div class="products-grid">
-            <!-- Товар 1 -->
-            <div class="product-card" onclick="buyItem('100 Алмазов', '10 сомони')">
-                <div class="product-icon">💎</div>
-                <div class="product-info">
-                    <h4>100 Алмазов</h4>
-                    <p class="product-price">10 сомони</p>
-                </div>
-                <button class="btn-buy">Купить</button>
-            </div>
-
-            <!-- Товар 2 -->
-            <div class="product-card" onclick="buyItem('310 Алмазов', '30 сомони')">
-                <div class="product-icon">💎</div>
-                <div class="product-info">
-                    <h4>310 Алмазов</h4>
-                    <p class="product-price">30 сомони</p>
-                </div>
-                <button class="btn-buy">Купить</button>
-            </div>
-
-            <!-- Товар 3 -->
-            <div class="product-card" onclick="buyItem('520 Алмазов', '50 сомони')">
-                <div class="product-icon">💎</div>
-                <div class="product-info">
-                    <h4>520 Алмазов</h4>
-                    <p class="product-price">50 сомони</p>
-                </div>
-                <button class="btn-buy">Купить</button>
-            </div>
-
-            <!-- Товар 4 -->
-            <div class="product-card" onclick="buyItem('Level Up Pass', '25 сомони')">
-                <div class="product-icon">🎫</div>
-                <div class="product-info">
-                    <h4>Level Up Pass</h4>
-                    <p class="product-price">25 сомони</p>
-                </div>
-                <button class="btn-buy">Купить</button>
+    <div class="header">
+        <div class="user-info">
+            <div class="avatar" id="user-avatar">U</div>
+            <div>
+                <div id="user-name" style="font-weight: bold;">Пользователь</div>
+                <div id="user-id" style="font-size: 12px; color: #94a3b8;">ID: -------</div>
             </div>
         </div>
     </div>
 
-    <script src="script.js"></script>
+    <div class="brand-title">
+        <img src="https://cdn-icons-png.flaticon.com/512/825/825590.png" alt="Free Fire Logo">
+        <span>Free Fire Official Store</span>
+    </div>
+
+    <div class="player-id-section">
+        <label for="player-id">Введите Player ID (UID):</label>
+        <input type="number" id="player-id" placeholder="Например: 123456789">
+    </div>
+
+    <div class="section-title">💎 Алмазы</div>
+    <div class="grid">
+        <div class="card" onclick="buyItem('100 Алмазов', '15 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
+            <div class="title">100 Алмазов</div>
+            <div class="price">15 TJS</div>
+        </div>
+        <div class="card" onclick="buyItem('310 Алмазов', '42 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
+            <div class="title">310 Алмазов</div>
+            <div class="price">42 TJS</div>
+        </div>
+        <div class="card" onclick="buyItem('520 Алмазов', '70 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
+            <div class="title">520 Алмазов</div>
+            <div class="price">70 TJS</div>
+        </div>
+        <div class="card" onclick="buyItem('1060 Алмазов', '135 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="Diamond">
+            <div class="title">1060 Алмазов</div>
+            <div class="price">135 TJS</div>
+        </div>
+    </div>
+
+    <div class="section-title">📜 Ваучеры и Пропуска</div>
+    <div class="grid">
+        <div class="card" onclick="buyItem('Недельный Ваучер', '22 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2953/2953361.png" alt="Weekly Pass">
+            <div class="title">Weekly Membership</div>
+            <div class="price">22 TJS</div>
+        </div>
+        <div class="card" onclick="buyItem('Месячный Ваучер', '95 TJS')">
+            <img src="https://cdn-icons-png.flaticon.com/512/2953/2953372.png" alt="Monthly Pass">
+            <div class="title">Monthly Membership</div>
+            <div class="price">95 TJS</div>
+        </div>
+    </div>
+
+    <div class="section-title">📜 История заказов</div>
+    <div class="history-section" id="history-list">
+        <div style="color: #94a3b8; font-size: 13px;">История пуста</div>
+    </div>
+
+    <script>
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+
+        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
+            const user = tg.initDataUnsafe.user;
+            document.getElementById('user-name').innerText = user.first_name + (user.last_name ? " " + user.last_name : "");
+            document.getElementById('user-id').innerText = "ID: " + user.id;
+            document.getElementById('user-avatar').innerText = user.first_name.charAt(0).toUpperCase();
+        }
+
+        function loadHistory() {
+            const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+            const container = document.getElementById('history-list');
+            if (history.length === 0) {
+                container.innerHTML = '<div style="color: #94a3b8; font-size: 13px;">История пуста</div>';
+                return;
+            }
+            container.innerHTML = history.map(item => `
+                <div class="history-item">
+                    <span>${item.title} (ID: ${item.playerId})</span>
+                    <span style="color: var(--gold-color);">${item.price}</span>
+                </div>
+            `).join('');
+        }
+
+        function buyItem(title, price) {
+            const playerId = document.getElementById('player-id').value;
+            if (!playerId) {
+                alert("Пожалуйста, введите ваш Free Fire Player ID!");
+                return;
+            }
+
+            const data = {
+                title: title,
+                price: price,
+                playerId: playerId
+            };
+
+            // Сохраняем в локальную историю
+            const history = JSON.parse(localStorage.getItem('order_history') || '[]');
+            history.unshift(data);
+            localStorage.setItem('order_history', JSON.stringify(history));
+            loadHistory();
+
+            // Отправляем данные боту
+            tg.sendData(JSON.stringify(data));
+        }
+
+        loadHistory();
+    </script>
 </body>
 </html>
