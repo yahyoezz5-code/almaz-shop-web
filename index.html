@@ -1,387 +1,293 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="tg">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Fors Almaz Store</title>
-    <script src="https://telegram.org/js/telegram-web-app.js"></script>
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
-    <style>
-        :root {
-            --bg-main: #0f172a;
-            --bg-card: #1e293b;
-            --text-main: #ffffff;
-            --text-muted: #94a3b8;
-            --accent: #6366f1;
-            --accent-hover: #4f46e5;
-            --nav-bg: #1e293b;
-            --border-color: #334155;
-        }
-
-        body.light-mode {
-            --bg-main: #f8fafc;
-            --bg-card: #ffffff;
-            --text-main: #0f172a;
-            --text-muted: #64748b;
-            --nav-bg: #ffffff;
-            --border-color: #e2e8f0;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background-color: var(--bg-main);
-            color: var(--text-main);
-            margin: 0;
-            padding: 0;
-            padding-bottom: 70px;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Pages */
-        .page { display: none; padding: 15px; }
-        .page.active { display: block; animation: fadeIn 0.3s; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-
-        /* Bottom Nav */
-        .bottom-nav {
-            position: fixed; bottom: 0; left: 0; right: 0;
-            background-color: var(--nav-bg);
-            display: flex; justify-content: space-around;
-            padding: 10px 0; border-top: 1px solid var(--border-color);
-            z-index: 1000; transition: background-color 0.3s;
-        }
-        .nav-item {
-            text-align: center; color: var(--text-muted);
-            font-size: 12px; cursor: pointer; transition: color 0.2s;
-        }
-        .nav-item i { display: block; font-size: 20px; margin-bottom: 4px; }
-        .nav-item.active { color: var(--accent); }
-
-        /* Profile Elements */
-        .profile-card {
-            background: var(--bg-card); border-radius: 16px;
-            padding: 20px; margin-bottom: 15px; text-align: center;
-            border: 1px solid var(--border-color);
-        }
-        .avatar-lg {
-            width: 60px; height: 60px; border-radius: 50%;
-            background: var(--accent); color: #fff;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; font-weight: bold; margin: 0 auto 10px auto;
-        }
-        .balance-box {
-            display: flex; justify-content: space-between;
-            background: var(--bg-main); border-radius: 12px;
-            padding: 15px; margin-top: 15px;
-        }
-        .btn-main {
-            background: var(--accent); color: #fff; border: none;
-            width: 100%; padding: 12px; border-radius: 12px;
-            font-size: 16px; font-weight: bold; margin-top: 15px; cursor: pointer;
-        }
-        .settings-row {
-            display: flex; justify-content: space-between; align-items: center;
-            background: var(--bg-card); padding: 15px;
-            border-radius: 12px; margin-bottom: 10px; border: 1px solid var(--border-color);
-        }
-
-        /* Free Fire Page */
-        .ff-header {
-            display: flex; align-items: center; gap: 10px; margin-bottom: 20px;
-        }
-        .ff-header img { width: 40px; border-radius: 8px; }
-        .input-group {
-            background: var(--bg-card); padding: 15px; border-radius: 12px; margin-bottom: 15px;
-            border: 1px solid var(--border-color);
-        }
-        .input-group input {
-            width: 100%; background: var(--bg-main); border: 1px solid var(--border-color);
-            color: var(--text-main); padding: 12px; border-radius: 8px; box-sizing: border-box;
-            margin-bottom: 10px; font-size: 16px;
-        }
-        .check-btn {
-            background: #22c55e; color: white; border: none; padding: 10px 15px;
-            border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%;
-        }
-        .region-box {
-            background: var(--accent); color: white; padding: 8px 15px;
-            border-radius: 8px; display: inline-block; font-size: 14px; font-weight: bold;
-        }
-        
-        /* Tabs */
-        .category-tabs {
-            display: flex; gap: 10px; margin: 20px 0 15px 0;
-        }
-        .cat-tab {
-            flex: 1; text-align: center; padding: 10px;
-            background: var(--bg-card); border-radius: 8px;
-            color: var(--text-muted); cursor: pointer; font-weight: bold;
-            border: 1px solid var(--border-color);
-        }
-        .cat-tab.active { background: var(--accent); color: #fff; border-color: var(--accent); }
-
-        /* Grid */
-        .items-grid {
-            display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
-        }
-        .item-card {
-            background: var(--bg-card); border: 1px solid var(--border-color);
-            border-radius: 12px; padding: 15px 10px; text-align: center;
-            cursor: pointer; position: relative;
-        }
-        .item-card img { width: 50px; height: 50px; object-fit: contain; margin-bottom: 10px; }
-        .item-title { font-weight: bold; font-size: 14px; margin-bottom: 5px; }
-        .item-price { color: var(--text-muted); font-size: 12px; }
-
-        /* Toggle Switch */
-        .switch { position: relative; display: inline-block; width: 40px; height: 24px; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: .4s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 16px; width: 16px; left: 4px; bottom: 4px; background-color: white; transition: .4s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--accent); }
-        input:checked + .slider:before { transform: translateX(16px); }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fors Almaz | Free Fire Donate</title>
+  <script src="https://telegram.org/js/telegram-web-app.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
-    <div id="page-shop" class="page active">
-        <div class="ff-header">
-            <img src="https://play-lh.googleusercontent.com/NEjsXHAU59mP_0bO_28o-i9GkCj_O3u8lZ1nFTVd5_Lq4sH-v10Z-qQ0K_7fL9W2Y6k" alt="FF Logo">
-            <h2>Free Fire (СНГ)</h2>
+  <div class="container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="brand-badge">
+        <img src="images/ff_logo.svg" alt="FF" class="brand-logo">
+        <div>
+          <div class="brand-title">Fors Almaz</div>
+          <div style="font-size: 11px; color: var(--text-muted);">Донати боэътимод 100%</div>
         </div>
+      </div>
+      <div class="region-tag">
+        <span>🌐</span> СНГ / ТҶ
+      </div>
+    </header>
 
-        <div class="input-group">
-            <label style="display:block; margin-bottom:8px; font-size:14px; color:var(--text-muted);">ID-И БОЗИНГАР</label>
-            <input type="number" id="player-id" placeholder="ID-ро ворид кунед">
-            <button class="check-btn" onclick="checkUID()">Санҷидан (Проверить)</button>
-            <div id="uid-result" style="margin-top: 10px; font-size: 14px; font-weight: bold; display: none; color: #22c55e;">
-                Ном: <span id="player-name">...</span>
-            </div>
+    <!-- 1. SHOP PAGE -->
+    <section id="page-shop" class="page-section active">
+      
+      <!-- Free Fire Player UID Box -->
+      <div class="uid-card">
+        <div class="field-label">
+          <span>🎮 ID-и бозигар (Player UID)</span>
+          <span style="color: #38bdf8; cursor: pointer;" onclick="pasteUID()">Часпондан</span>
         </div>
-
-        <div style="margin-bottom: 15px;">
-            <span style="font-size:14px; color:var(--text-muted);">Минтақа:</span>
-            <div class="region-box">СНГ</div>
+        <div class="uid-input-row">
+          <input type="number" id="player-uid-input" class="uid-input" placeholder="Мисол: 234567891" autocomplete="off">
+          <button class="btn-check" onclick="checkPlayerUID()">
+            <span id="check-btn-text">Санҷидан</span>
+          </button>
         </div>
-
-        <div class="category-tabs">
-            <div class="cat-tab active" onclick="switchCategory('diamonds')">Алмазы</div>
-            <div class="cat-tab" onclick="switchCategory('passes')">Пропуск</div>
+        <div id="player-badge" class="player-info-badge" style="display: none;">
+          <div>Бозигар: <span id="player-nickname" class="player-name">...</span></div>
+          <span style="color: #10b981;">✓ Тасдиқ шуд</span>
         </div>
+      </div>
 
-        <div class="items-grid" id="grid-diamonds">
-            <div class="item-card" onclick="buyItem('110 Diamonds', '15 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
-                <div class="item-title">110 Diamonds</div>
-                <div class="item-price">15.0 сомонӣ</div>
-            </div>
-            <div class="item-card" onclick="buyItem('341 Diamonds', '42 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
-                <div class="item-title">341 Diamonds</div>
-                <div class="item-price">42.0 сомонӣ</div>
-            </div>
-            <div class="item-card" onclick="buyItem('572 Diamonds', '70 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2092/2092751.png" alt="💎">
-                <div class="item-title">572 Diamonds</div>
-                <div class="item-price">70.0 сомонӣ</div>
-            </div>
-        </div>
+      <!-- Categories Tabs -->
+      <div class="tabs-nav">
+        <button class="tab-btn active" id="tab-diamonds-btn" onclick="selectCategory('diamonds')">
+          💎 Алмазҳо
+        </button>
+        <button class="tab-btn" id="tab-passes-btn" onclick="selectCategory('passes')">
+          💳 Пропускҳо
+        </button>
+      </div>
 
-        <div class="items-grid" id="grid-passes" style="display: none;">
-            <div class="item-card" onclick="buyItem('Weekly Pass', '22 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2953/2953361.png" alt="💳">
-                <div class="item-title">Еженедельная Подписка</div>
-                <div class="item-price">22.0 сомонӣ</div>
-            </div>
-            <div class="item-card" onclick="buyItem('Monthly Pass', '95 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/2953/2953372.png" alt="💳">
-                <div class="item-title">Месячная Подписка</div>
-                <div class="item-price">95.0 сомонӣ</div>
-            </div>
-            <div class="item-card" onclick="buyItem('Level Up Pass', '15 TJS')">
-                <img src="https://cdn-icons-png.flaticon.com/512/4112/4112351.png" alt="⭐">
-                <div class="item-title">Повышение Уровня</div>
-                <div class="item-price">15.0 сомонӣ</div>
-            </div>
-        </div>
-    </div>
-
-    <div id="page-history" class="page">
-        <h2>Таърих (История)</h2>
-        <div id="history-list" class="input-group">
-            <div style="color: var(--text-muted); text-align: center;">Боригири... (Пусто)</div>
-        </div>
-    </div>
-
-    <div id="page-profile" class="page">
-        <div class="profile-card">
-            <div class="avatar-lg" id="profile-avatar">U</div>
-            <h2 id="profile-name" style="margin: 0; font-size: 20px;">Пользователь</h2>
-            <div id="profile-id" style="color: var(--text-muted); font-size: 12px; margin-top: 5px;">ID: ---</div>
-            
-            <div class="balance-box">
-                <div>
-                    <div style="font-size: 12px; color: var(--text-muted);">БАЛАНС</div>
-                    <div style="font-weight: bold; font-size: 18px;">0.0 <span style="font-size: 12px;">сомонӣ</span></div>
-                </div>
-                <div>
-                    <div style="font-size: 12px; color: var(--text-muted);">ҶАМЪИ ХАРОҶОТ</div>
-                    <div style="font-weight: bold; font-size: 18px;">0 <span style="font-size: 12px;">сомонӣ</span></div>
-                </div>
-            </div>
-            <button class="btn-main" onclick="openTopUp()">Пур кардани баланс</button>
-        </div>
-
-        <div class="settings-row">
-            <span>🌙 Речаи шабона (Тёмная тема)</span>
-            <label class="switch">
-                <input type="checkbox" id="theme-toggle" checked onchange="toggleTheme()">
-                <span class="slider"></span>
-            </label>
-        </div>
-        <div class="settings-row" onclick="tg.close()">
-            <span>💬 Дастгирӣ (Поддержка)</span>
-            <i class="fa-solid fa-chevron-right" style="color: var(--text-muted);"></i>
-        </div>
-    </div>
-
-    <div id="page-topup" class="page">
-        <h2>Пур кардани баланс</h2>
-        <div class="input-group">
-            <label style="color: var(--text-muted); font-size: 14px;">Маблағро ворид кунед (сомонӣ):</label>
-            <input type="number" id="topup-amount" placeholder="Масалан: 20">
-            <p style="font-size: 12px; color: var(--text-muted);">Барои пур кардани баланс маблағро интихоб кунед ва чекро ба бот равон кунед.</p>
-            <button class="btn-main" onclick="requestTopUp()">Идома додан (Равон кардани чек) ➔</button>
-        </div>
-        <button class="btn-main" style="background: transparent; border: 1px solid var(--border-color); color: var(--text-main);" onclick="switchPage('profile')">Кафо (Назад)</button>
-    </div>
-
-    <nav class="bottom-nav">
-        <div class="nav-item active" id="nav-shop" onclick="switchPage('shop')">
-            <i class="fa-solid fa-gamepad"></i> Мағоза
-        </div>
-        <div class="nav-item" id="nav-history" onclick="switchPage('history')">
-            <i class="fa-solid fa-clock-rotate-left"></i> Таърих
-        </div>
-        <div class="nav-item" id="nav-profile" onclick="switchPage('profile')">
-            <i class="fa-solid fa-user"></i> Профил
-        </div>
-    </nav>
-
-    <script>
-        const tg = window.Telegram.WebApp;
-        tg.expand();
-        tg.ready();
-
-        // Подгрузка данных пользователя Telegram
-        if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
-            const user = tg.initDataUnsafe.user;
-            const name = user.first_name + (user.last_name ? " " + user.last_name : "");
-            document.getElementById('profile-name').innerText = name;
-            document.getElementById('profile-id').innerText = "ID: " + user.id;
-            document.getElementById('profile-avatar').innerText = name.charAt(0).toUpperCase();
-        }
-
-        // Переключение страниц меню
-        function switchPage(pageId) {
-            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-            
-            document.getElementById('page-' + pageId).classList.add('active');
-            if(document.getElementById('nav-' + pageId)) {
-                document.getElementById('nav-' + pageId).classList.add('active');
-            }
-            if(pageId === 'history') loadHistory();
-        }
-
-        // Переключение вкладок Алмазы/Пропуска
-        function switchCategory(cat) {
-            document.querySelectorAll('.cat-tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('grid-diamonds').style.display = 'none';
-            document.getElementById('grid-passes').style.display = 'none';
-
-            if(cat === 'diamonds') {
-                document.querySelectorAll('.cat-tab')[0].classList.add('active');
-                document.getElementById('grid-diamonds').style.display = 'grid';
-            } else {
-                document.querySelectorAll('.cat-tab')[1].classList.add('active');
-                document.getElementById('grid-passes').style.display = 'grid';
-            }
-        }
-
-        // Логика светлой/темной темы
-        function toggleTheme() {
-            const isDark = document.getElementById('theme-toggle').checked;
-            if (isDark) {
-                document.body.classList.remove('light-mode');
-            } else {
-                document.body.classList.add('light-mode');
-            }
-        }
-
-        // Имитация проверки UID
-        function checkUID() {
-            const uid = document.getElementById('player-id').value;
-            if(!uid) return alert("UID-ро ворид кунед!");
-            
-            const resultBox = document.getElementById('uid-result');
-            const nameBox = document.getElementById('player-name');
-            resultBox.style.display = 'block';
-            nameBox.innerText = "Ҷустуҷӯ... (Поиск)";
-            nameBox.style.color = "var(--text-muted)";
-
-            // Эмуляция задержки сервера
-            setTimeout(() => {
-                nameBox.innerText = "PLAYER_" + uid.substring(0, 4); // Заглушка, так как API Garena закрыт
-                nameBox.style.color = "#22c55e";
-            }, 1000);
-        }
-
-        // Покупка
-        function buyItem(title, price) {
-            const uid = document.getElementById('player-id').value;
-            if(!uid) {
-                alert("Аввал ID-и худро нависед! (Введите ID)");
-                return;
-            }
-            const data = { type: 'order', title: title, price: price, uid: uid };
-            
-            // Сохранение в историю
-            let history = JSON.parse(localStorage.getItem('almaz_history') || '[]');
-            history.unshift(data);
-            localStorage.setItem('almaz_history', JSON.stringify(history));
-
-            // Отправка в бота
-            tg.sendData(JSON.stringify(data));
-        }
-
-        // Пополнение баланса
-        function openTopUp() { switchPage('topup'); }
+      <!-- Diamonds Grid -->
+      <div class="products-grid" id="grid-diamonds">
         
-        function requestTopUp() {
-            const amount = document.getElementById('topup-amount').value;
-            if(!amount) return alert("Маблағро ворид кунед!");
-            
-            // Отправляем запрос на пополнение в бота (чтобы он попросил фото чека)
-            const data = { type: 'topup', amount: amount };
-            tg.sendData(JSON.stringify(data));
-        }
+        <div class="product-card" onclick="openBuyModal('110_diamonds', '110 Алмаз', 110, 15, 'images/diamond_110.svg')">
+          <span class="bonus-pill">+11 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_110.svg" alt="110 💎">
+          </div>
+          <div class="product-name">110 Diamonds</div>
+          <div class="product-desc">Интиқоли фаврӣ</div>
+          <button class="product-price-btn">15.0 сомонӣ</button>
+        </div>
 
-        // Загрузка истории
-        function loadHistory() {
-            const history = JSON.parse(localStorage.getItem('almaz_history') || '[]');
-            const container = document.getElementById('history-list');
-            if (history.length === 0) {
-                container.innerHTML = '<div style="color: var(--text-muted); text-align: center;">Таърих холӣ аст</div>';
-                return;
-            }
-            container.innerHTML = history.map(item => `
-                <div style="display:flex; justify-content:space-between; padding:10px 0; border-bottom:1px solid var(--border-color); font-size:14px;">
-                    <div>${item.title} <br><span style="color:var(--text-muted); font-size:12px;">ID: ${item.uid}</span></div>
-                    <div style="font-weight:bold;">${item.price}</div>
-                </div>
-            `).join('');
-        }
-    </script>
+        <div class="product-card" onclick="openBuyModal('341_diamonds', '341 Алмаз', 341, 42, 'images/diamond_341.svg')">
+          <span class="bonus-pill">+34 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_341.svg" alt="341 💎">
+          </div>
+          <div class="product-name">341 Diamonds</div>
+          <div class="product-desc">Хитоботи маҳбуб 🔥</div>
+          <button class="product-price-btn">42.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('572_diamonds', '572 Алмаз', 572, 70, 'images/diamond_572.svg')">
+          <span class="bonus-pill">+57 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_572.svg" alt="572 💎">
+          </div>
+          <div class="product-name">572 Diamonds</div>
+          <div class="product-desc">Сарфаи 10%</div>
+          <button class="product-price-btn">70.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('1160_diamonds', '1160 Алмаз', 1160, 140, 'images/diamond_1160.svg')">
+          <span class="bonus-pill">+116 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_1160.svg" alt="1160 💎">
+          </div>
+          <div class="product-name">1160 Diamonds</div>
+          <div class="product-desc">Барои Боевой Пропуск</div>
+          <button class="product-price-btn">140.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('2390_diamonds', '2390 Алмаз', 2390, 280, 'images/diamond_2390.svg')">
+          <span class="bonus-pill">+239 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_2390.svg" alt="2390 💎">
+          </div>
+          <div class="product-name">2390 Diamonds</div>
+          <div class="product-desc">Сундуки калон</div>
+          <button class="product-price-btn">280.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('6160_diamonds', '6160 Алмаз', 6160, 700, 'images/diamond_6160.svg')">
+          <span class="bonus-pill">+616 Бонус</span>
+          <div class="product-icon-wrap">
+            <img src="images/diamond_6160.svg" alt="6160 💎">
+          </div>
+          <div class="product-name">6160 Diamonds</div>
+          <div class="product-desc">Маҷмӯи VIP</div>
+          <button class="product-price-btn">700.0 сомонӣ</button>
+        </div>
+
+      </div>
+
+      <!-- Passes Grid -->
+      <div class="products-grid" id="grid-passes" style="display: none;">
+        
+        <div class="product-card" onclick="openBuyModal('weekly_pass', 'Weekly Pass (Ҳафтаина)', 0, 22, 'images/weekly_pass.svg')">
+          <span class="bonus-pill">Ҳафтаина</span>
+          <div class="product-icon-wrap">
+            <img src="images/weekly_pass.svg" alt="Weekly">
+          </div>
+          <div class="product-name">Weekly Pass</div>
+          <div class="product-desc">Ҳар рӯз алмаз + ашёҳо</div>
+          <button class="product-price-btn">22.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('monthly_pass', 'Monthly Pass (Моҳона)', 0, 95, 'images/monthly_pass.svg')">
+          <span class="bonus-pill">Моҳона VIP</span>
+          <div class="product-icon-wrap">
+            <img src="images/monthly_pass.svg" alt="Monthly">
+          </div>
+          <div class="product-name">Monthly Pass</div>
+          <div class="product-desc">Дар муддати 30 рӯз</div>
+          <button class="product-price-btn">95.0 сомонӣ</button>
+        </div>
+
+        <div class="product-card" onclick="openBuyModal('levelup_pass', 'Level Up Pass', 0, 15, 'images/levelup_pass.svg')">
+          <span class="bonus-pill">Повышение</span>
+          <div class="product-icon-wrap">
+            <img src="images/levelup_pass.svg" alt="Level Up">
+          </div>
+          <div class="product-name">Level Up Pass</div>
+          <div class="product-desc">Барои сатҳи бозигар</div>
+          <button class="product-price-btn">15.0 сомонӣ</button>
+        </div>
+
+      </div>
+
+    </section>
+
+    <!-- 2. HISTORY PAGE -->
+    <section id="page-history" class="page-section">
+      <h3 style="margin-bottom: 14px; font-size: 16px;">📜 Таърихи харидҳо (История)</h3>
+      <div id="history-container">
+        <div style="text-align: center; color: var(--text-muted); padding: 40px 0;">
+          Боригирӣ шуда истодааст...
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. PROFILE PAGE -->
+    <section id="page-profile" class="page-section">
+      <div class="profile-hero">
+        <div class="user-avatar-circle" id="profile-avatar">U</div>
+        <div class="user-display-name" id="profile-name">Корбари Telegram</div>
+        <div class="user-tg-id" id="profile-id">ID: ---</div>
+        
+        <div class="wallet-stats-grid">
+          <div class="stat-item">
+            <div class="stat-caption">БАЛАНСИ ШУМО</div>
+            <div class="stat-value" id="profile-balance">0.00 <span style="font-size: 12px; color: var(--text-muted);">сомонӣ</span></div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-caption">ҶАМЪИ ХАРОҶОТ</div>
+            <div class="stat-value" id="profile-spent" style="color: var(--text-muted);">0.00 <span style="font-size: 12px;">сомонӣ</span></div>
+          </div>
+        </div>
+
+        <button class="btn-primary-action" onclick="showPage('topup')">
+          💳 Пур кардани баланс (Пополнить)
+        </button>
+      </div>
+
+      <!-- Quick Settings -->
+      <div class="uid-card" style="display: flex; justify-content: space-between; align-items: center;">
+        <span>🌙 Тёмная тема</span>
+        <input type="checkbox" id="theme-toggle" checked onchange="toggleTheme()" style="width: 20px; height: 20px; accent-color: var(--accent-blue);">
+      </div>
+
+      <div class="uid-card" style="display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="openSupport()">
+        <span>👨‍💻 Дастгирӣ ва кӯмак (Админ)</span>
+        <span style="color: #38bdf8; font-weight: bold;">@yahyoezz5 ➔</span>
+      </div>
+    </section>
+
+    <!-- 4. TOPUP PAGE -->
+    <section id="page-topup" class="page-section">
+      <h3 style="margin-bottom: 14px; font-size: 16px;">💳 Пур кардани баланс</h3>
+      
+      <div class="requisite-card">
+        <img src="images/dc_next.svg" alt="DC" style="width: 50px; height: 50px; margin-bottom: 8px;">
+        <div style="font-size: 14px; font-weight: 800;">Пардохт тавассути DC Next / Корти миллӣ</div>
+        <div style="font-size: 12px; color: var(--text-muted); margin-top: 4px;">Маблағро ба рақами зерин гузаронед:</div>
+
+        <div class="dc-number-box">
+          <span class="dc-number-text">+992 980 72 60 60</span>
+          <button class="btn-copy" onclick="copyDCNumber()">Нусха (Копия)</button>
+        </div>
+
+        <div style="font-size: 12px; color: var(--text-muted); text-align: left; line-height: 1.6; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 10px;">
+          📌 <b>Дастурамал:</b><br>
+          1. Ба барномаи DC Next (ё дигар бонки тоҷикӣ) дароед.<br>
+          2. Ба рақами <b>+992 980 72 60 60</b> маблағро интиқол диҳед.<br>
+          3. Чек (скриншот)-ро гиред ва <b>ба бот фиристед</b>.<br>
+          4. Админ дар давоми 1-3 дақиқа баланси шуморо пур мекунад!
+        </div>
+
+        <div style="display: flex; gap: 10px; margin-top: 18px;">
+          <button class="btn-secondary-action" onclick="showPage('profile')">Кафо (Назад)</button>
+          <button class="btn-primary-action" style="flex: 1;" onclick="tg.close()">Фиристодани чек ➔</button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- Bottom Navigation Bar -->
+  <nav class="bottom-nav-bar">
+    <div class="nav-link active" id="nav-btn-shop" onclick="showPage('shop')">
+      <svg viewBox="0 0 24 24"><path d="M4 6h16v12H4z M2 4h20v16H2z M7 10h10v2H7z"/></svg>
+      <span>Мағоза</span>
+    </div>
+    <div class="nav-link" id="nav-btn-history" onclick="showPage('history')">
+      <svg viewBox="0 0 24 24"><path d="M12 2a10 10 0 1010 10A10 10 0 0012 2zm1 14h-2V7h2zm0-8h-2V6h2z"/></svg>
+      <span>Таърих</span>
+    </div>
+    <div class="nav-link" id="nav-btn-profile" onclick="showPage('profile')">
+      <svg viewBox="0 0 24 24"><path d="M12 12a5 5 0 10-5-5 5 5 0 005 5zm0 2c-5 0-9 3-9 6v2h18v-2c0-3-4-6-9-6z"/></svg>
+      <span>Профил</span>
+    </div>
+  </nav>
+
+  <!-- Modal Sheet: Purchase Confirmation -->
+  <div class="modal-overlay" id="buy-modal">
+    <div class="modal-sheet">
+      <div class="modal-header">
+        <img id="modal-item-img" src="images/diamond_single.svg" alt="item" style="width: 60px; height: 60px; margin-bottom: 6px;">
+        <div class="modal-title" id="modal-item-title">Маҳсулот</div>
+      </div>
+
+      <div class="modal-row">
+        <span style="color: var(--text-muted);">Free Fire UID:</span>
+        <span id="modal-uid" style="font-weight: 800;">---</span>
+      </div>
+      <div class="modal-row">
+        <span style="color: var(--text-muted);">Номи бозигар:</span>
+        <span id="modal-nickname" style="font-weight: 800; color: #10b981;">---</span>
+      </div>
+      <div class="modal-row">
+        <span style="color: var(--text-muted);">Нарх:</span>
+        <span id="modal-price" style="font-weight: 800; color: #38bdf8;">0.0 сомонӣ</span>
+      </div>
+      <div class="modal-row">
+        <span style="color: var(--text-muted);">Баланси шумо:</span>
+        <span id="modal-user-balance" style="font-weight: 800;">0.0 сомонӣ</span>
+      </div>
+
+      <div id="modal-error-msg" style="color: #ef4444; font-size: 13px; margin-top: 10px; display: none; text-align: center;">
+        Маблағ дар баланси шумо кифоя нест!
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-secondary-action" onclick="closeBuyModal()">Бекор кардан</button>
+        <button id="modal-confirm-btn" class="btn-primary-action" style="flex: 1;" onclick="executePurchase()">
+          Тасдиқи харид ✓
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
 </body>
 </html>

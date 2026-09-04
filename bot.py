@@ -5,74 +5,65 @@ from aiogram import Bot, Dispatcher, types, F
 from aiogram.filters import Command
 from aiogram.utils.keyboard import InlineKeyboardBuilder
 
-TOKEN = "7863378228:AAHL1Qhvv04XtA5tB4Ha7mESzCKY9DC8RB4"
-WEB_APP_URL = "https://yahyoezz5-code.github.io/almaz-shop-web/"
+TOKEN = "7863378228:AAHL1Qhvv04XtA5b4Ha7mESzCKY9DC8RB4"
+WEB_APP_URL = "https://yahyoezz5-code.github.io/fors-almaz-store/"
 
 bot = Bot(token=TOKEN)
 dp = Dispatcher()
 
+# Ангар/склад алмазов и ваучеров бота (заранее купленные)
+BOT_INVENTORY = {
+    "diamonds": 1000,
+    "vouchers": 50
+}
+
 @dp.message(Command("start"))
 async def cmd_start(message: types.Message):
-    user_name = message.from_user.first_name or "Дӯст"
-    
     builder = InlineKeyboardBuilder()
-    builder.button(
-        text="🎮 Кушодани Мағоза (Free Fire)",
-        web_app=types.WebAppInfo(url=WEB_APP_URL)
-    )
-    builder.adjust(1)
+    builder.button(text="🎮 Кушодани Fors Almaz", web_app=types.WebAppInfo(url=WEB_APP_URL))
     
-    greeting_text = (
-        f"👋 Салом, <b>{user_name}</b>!\n\n"
-        f"💎 Инҷо боти автоматии Fors Almaz Store мебошад.\n"
-        f"Барои хариди алмаз ё пур кардани баланс тугмаи зерро пахш кунед:"
-    )
-    
-    await message.answer(greeting_text, reply_markup=builder.as_markup(), parse_mode="HTML")
+    text = f"👋 Салом, {message.from_user.first_name}!\n\n💎 Хуш омадед ба Fors Almaz Store. Барои харид тугмаи зерро пахш кунед."
+    await message.answer(text, reply_markup=builder.as_markup())
 
-# Обработка данных из Mini App (покупки и запросы на пополнение)
 @dp.message(F.web_app_data)
-async def handle_web_app_data(message: types.Message):
-    try:
-        data = json.loads(message.web_app_data.data)
+async def handle_webapp_data(message: types.Message):
+    global BOT_INVENTORY
+    data = json.loads(message.web_app_data.data)
+    
+    if data['type'] == 'buy':
+        item = data['item']
+        uid = data['uid']
         
-        # Если это запрос на пополнение баланса
-        if data.get('type') == 'topup':
-            amount = data.get('amount')
-            text = (
-                f"💳 <b>Дархост барои пур кардани баланс</b>\n\n"
-                f"Маблағ: <b>{amount} сомонӣ</b>\n\n"
-                f"Рақами корт барои интиқол (DC.NEXT / Душанбе Сити):\n"
-                f"<code>992800000000000</code>\n\n" # ЗАМЕНИ НА СВОЙ НОМЕР КАРТЫ
-                f"📸 <i>Илтимос, баъд аз пардохт расми чекро (скриншот) ба ҳамин чат равон кунед.</i>"
-            )
-            await message.answer(text, parse_mode="HTML")
-            
-        # Если это покупка алмазов
-        elif data.get('type') == 'order':
-            item_title = data.get("title")
-            item_price = data.get("price")
-            uid = data.get("uid")
-            
-            text = (
-                f"✅ <b>Дархости харид қабул шуд!</b>\n\n"
-                f"🛒 <b>Маҳсулот:</b> {item_title}\n"
-                f"💰 <b>Нарх:</b> {item_price}\n"
-                f"🎮 <b>Free Fire ID:</b> <code>{uid}</code>\n\n"
-                f"⏳ <i>Дархости шумо дар ҳоли коркард аст...</i>"
-            )
-            await message.answer(text, parse_mode="HTML")
-            
-    except Exception as e:
-        await message.answer("Хатогӣ рух дод. Илтимос аз нав санҷед.")
+        if item.isdigit():
+            amount = int(item)
+            if BOT_INVENTORY["diamonds"] >= amount:
+                BOT_INVENTORY["diamonds"] -= amount
+                status = "✅ Муваффақона (Успешно)"
+                stock_info = f"📦 Дар анбори бот боқӣ монд: {BOT_INVENTORY['diamonds']} алмаз."
+            else:
+                status = "❌ Хатогӣ: Алмаз дар анбори бот тамом шуд!"
+                stock_info = "Илтимос ба админ муроҷиат кунед."
+        else:
+            if BOT_INVENTORY["vouchers"] >= 1:
+                BOT_INVENTORY["vouchers"] -= 1
+                status = "✅ Муваффақона (Успешно)"
+                stock_info = f"📦 Дар анбор боқӣ монд: {BOT_INVENTORY['vouchers']} ваучер."
+            else:
+                status = "❌ Хатогӣ: Ваучерҳо тамом шуданд!"
+                stock_info = ""
 
-# Обработка фотографий (Чеков об оплате)
-@dp.message(F.photo)
-async def handle_photo(message: types.Message):
-    await message.answer("✅ Чек қабул шуд! Админ онро месанҷад ва баланси шуморо пур мекунад.")
+        response_text = (
+            f"🛒 <b>Дархости нав:</b>\n\n"
+            f"🎮 <b>ID:</b> <code>{uid}</code>\n"
+            f"💎 <b>Маҳсулот:</b> {item}\n"
+            f"📊 <b>Статус:</b> {status}\n\n"
+            f"<i>{stock_info}</i>"
+        )
+        
+        await message.answer(response_text, parse_mode="HTML")
 
 async def main():
-    print("Бот запущен и ждет сообщения...")
+    print("Бот Fors Almaz запущен...")
     await dp.start_polling(bot)
 
 if __name__ == "__main__":
