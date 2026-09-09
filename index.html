@@ -262,6 +262,8 @@ const tg = window.Telegram.WebApp;
 tg.ready(); tg.expand();
 if (tg.setHeaderColor) { try{ tg.setHeaderColor('#0b0b12'); }catch(e){} }
 let verifiedName = null;
+let verifiedKey = null;
+let verificationController = null;
 if (tg.initDataUnsafe && tg.initDataUnsafe.user) {
   const u = tg.initDataUnsafe.user;
   const full = u.first_name + (u.last_name ? " " + u.last_name : "");
@@ -283,20 +285,12 @@ function refreshBalanceUI(){
 refreshBalanceUI();
 try {
   const savedUid = localStorage.getItem('almaz_saved_uid');
-  const savedNick = localStorage.getItem('almaz_saved_nick');
   if (savedUid) {
     const pInput = document.getElementById('playerId');
     if (pInput) pInput.value = savedUid;
-    if (savedNick) {
-      verifiedName = savedNick;
-      const box = document.getElementById('verifyResult');
-      if (box) {
-        box.className = 'verify-result ok';
-        box.style.display = 'flex';
-        box.innerText = '✅ ' + savedNick;
-      }
-    }
   }
+  // Older versions saved fabricated nicknames; require a fresh verification.
+  localStorage.removeItem('almaz_saved_nick');
 } catch(e){}
 function switchPage(p){
   document.querySelectorAll('.page').forEach(x=>x.classList.remove('active'));
@@ -385,30 +379,55 @@ function renderPacks(){
 }
 renderPacks();
 function resetVerify(){
+  if(verificationController) verificationController.abort();
+  verificationController = null;
   verifiedName = null;
+  verifiedKey = null;
   document.getElementById('verifyResult').style.display='none';
+  const btn = document.getElementById('checkBtn');
+  btn.disabled = false; btn.innerText = 'Санҷидан';
 }
 function ffCacheGet(key){
   try{
-    const raw = sessionStorage.getItem('ffcheck_'+key);
+    // Version the cache to discard fabricated results from older versions.
+    const raw = sessionStorage.getItem('ffcheck_v2_'+key);
     if(!raw) return null;
     const obj = JSON.parse(raw);
-    if(Date.now() - obj.ts > FF_CHECK_CACHE_MS) return null;
+    if(!Number.isFinite(obj.ts) || Date.now() - obj.ts > FF_CHECK_CACHE_MS) return null;
+    if(typeof obj.nickname !== 'string' || !obj.nickname.trim()) return null;
     return obj;
   }catch(e){ return null; }
 }
-function ffCacheSet(key, nickname, level){
-  try{ sessionStorage.setItem('ffcheck_'+key, JSON.stringify({nickname:nickname, level:level, ts: Date.now()})); }catch(e){}
+function ffCacheSet(key, nickname){
+  try{ sessionStorage.setItem('ffcheck_v2_'+key, JSON.stringify({nickname:nickname, ts: Date.now()})); }catch(e){}
+}
+function showVerifiedPlayer(uid, key, nickname){
+  verifiedName = nickname;
+  verifiedKey = key;
+  try{ localStorage.setItem('almaz_saved_uid', uid); }catch(e){}
+  const box = document.getElementById('verifyResult');
+  box.className='verify-result ok'; box.style.color=''; box.style.display='flex';
+  box.innerText = '✅ ' + nickname;
+  playSuccess();
 }
 async function checkUID(){
   const uidInput = document.getElementById('playerId');
   const uid = uidInput ? uidInput.value.trim() : '';
+  const region = currentRegion;
   const box = document.getElementById('verifyResult');
   const btn = document.getElementById('checkBtn');
+  resetVerify();
+  box.style.color='';
   if(!uid || !/^\d{6,12}$/.test(uid)){
     box.className='verify-result err'; box.style.display='flex';
-    box.innerText='⚠️ ID-и дурустро ворид кунед (ҳадди ақал 6 рақам)';
+    box.innerText='⚠️ ID-и дурустро ворид кунед (аз 6 то 12 рақам)';
     playError(); return;
+  }
+  const cacheKey = region + ':' + uid;
+  const cached = ffCacheGet(cacheKey);
+  if(cached){
+    showVerifiedPlayer(uid, cacheKey, cached.nickname);
+    return;
   }
   const now = Date.now();
   const wait = FF_CHECK_COOLDOWN_MS - (now - lastCheckAt);
@@ -417,63 +436,40 @@ async function checkUID(){
     box.innerText = '⏳ Лутфан ' + Math.ceil(wait/1000) + ' сония сабр кунед';
     return;
   }
-  const cacheKey = currentRegion + ':' + uid;
-  const cached = ffCacheGet(cacheKey);
-  if(cached){
-    verifiedName = cached.nickname;
-    try {
-      localStorage.setItem('almaz_saved_uid', uid);
-      localStorage.setItem('almaz_saved_nick', verifiedName);
-    } catch(e){}
-    box.className='verify-result ok'; box.style.display='flex';
-    box.innerText = '✅ ' + cached.nickname + (cached.level && cached.level !== '?' ? ' (Level ' + cached.level + ')' : '');
-    playSuccess();
-    return;
-  }
   lastCheckAt = now;
   btn.disabled = true; btn.innerText = '...';
   box.className='verify-result'; box.style.display='flex'; box.style.color='var(--text-muted)';
   box.innerText = 'Санҷиш...';
 
+  const controller = new AbortController();
+  verificationController = controller;
+  const timeoutId = setTimeout(() => controller.abort(), 10000);
+  const isCurrent = () => verificationController === controller &&
+    uidInput.value.trim() === uid && currentRegion === region;
   try{
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 2500);
-    const url = FF_CHECK_API_BASE + '?region=' + currentRegion + '&uid=' + encodeURIComponent(uid);
+    const url = FF_CHECK_API_BASE + '?region=' + encodeURIComponent(region) + '&uid=' + encodeURIComponent(uid);
     const res = await fetch(url, { signal: controller.signal });
-    clearTimeout(timeoutId);
-    if (res.ok) {
-      const data = await res.json();
-      const nickname = data && data.basicInfo && data.basicInfo.nickname;
-      if(nickname){
-        const level = data.basicInfo.level || '?';
-        verifiedName = nickname;
-        ffCacheSet(cacheKey, nickname, level);
-        try {
-          localStorage.setItem('almaz_saved_uid', uid);
-          localStorage.setItem('almaz_saved_nick', verifiedName);
-        } catch(e){}
-        box.className='verify-result ok'; box.style.color='';
-        box.innerText = '✅ ' + nickname + ' (Level ' + level + ')';
-        playSuccess();
-        btn.disabled = false; btn.innerText = 'Санҷидан';
-        return;
-      }
+    if(!res.ok) throw new Error('Player lookup failed');
+    const data = await res.json();
+    const nickname = data && data.basicInfo && data.basicInfo.nickname;
+    if(data.success === false || typeof nickname !== 'string' || !nickname.trim()){
+      throw new Error('Player nickname missing');
     }
+    if(!isCurrent() || controller.signal.aborted) return;
+    ffCacheSet(cacheKey, nickname);
+    showVerifiedPlayer(uid, cacheKey, nickname);
   }catch(e){
-    // API недоступен или таймаут
+    if(!isCurrent()) return;
+    box.className='verify-result err'; box.style.color=''; box.style.display='flex';
+    box.innerText = '⚠️ Номи бозигар ёфт нашуд. ID ва минтақаро санҷед ва дубора кӯшиш кунед.';
+    playError();
+  }finally{
+    clearTimeout(timeoutId);
+    if(verificationController === controller){
+      verificationController = null;
+      btn.disabled = false; btn.innerText = 'Санҷидан';
+    }
   }
-
-  btn.disabled = false; btn.innerText = 'Санҷидан';
-  const fallbackNick = "FF_" + uid.slice(-4);
-  verifiedName = fallbackNick;
-  ffCacheSet(cacheKey, fallbackNick, "✓");
-  try {
-    localStorage.setItem('almaz_saved_uid', uid);
-    localStorage.setItem('almaz_saved_nick', verifiedName);
-  } catch(e){}
-  box.className='verify-result ok'; box.style.color=''; box.style.display='flex';
-  box.innerText = '✅ ID тасдиқ шуд (Бозигар: ' + fallbackNick + ')';
-  playSuccess();
 }
 function buyItem(packageId){
   const uidInput = document.getElementById('playerId');
@@ -485,15 +481,10 @@ function buyItem(packageId){
     if(uidInput) uidInput.focus();
     return;
   }
-  if(!verifiedName){
-    verifiedName = "FF_" + uid.slice(-4);
-    const box = document.getElementById('verifyResult');
-    if (box) {
-      box.className = 'verify-result ok';
-      box.style.color = '';
-      box.style.display = 'flex';
-      box.innerText = '✅ ID тасдиқ шуд (Бозигар: ' + verifiedName + ')';
-    }
+  if(!verifiedName || verifiedKey !== currentRegion + ':' + uid){
+    playError();
+    alert('Аввал ID-и бозигарро бо тугмаи «Санҷидан» тасдиқ кунед!');
+    return;
   }
   const pkg = PACKAGES.find(function(p){ return p.id===packageId; });
   if(!pkg) return;
